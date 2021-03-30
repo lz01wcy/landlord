@@ -27,14 +27,16 @@ func (c *Client) runRobot() {
 			if act, ok := msg[0].(int); ok {
 				protocolCode := act
 				switch protocolCode {
+				// 需要发牌
 				case common.ResDealPoker:
 					time.Sleep(time.Second)
 					c.Table.Lock.RLock()
+					// 如果自己是第一个叫分 字典叫分
 					if c.Table.GameManager.FirstCallScore == c {
 						c.autoCallScore()
 					}
 					c.Table.Lock.RUnlock()
-
+				// 需要叫分
 				case common.ResCallScore:
 					if len(msg) < 4 {
 						logs.Error("ResCallScore msg err:%v", msg)
@@ -42,6 +44,7 @@ func (c *Client) runRobot() {
 					}
 					time.Sleep(time.Second)
 					c.Table.Lock.RLock()
+					// 轮到自己且自己没叫分
 					if c.Table.GameManager.Turn == c && !c.IsCalled {
 						var callEnd bool
 						logs.Debug("ResCallScore %t", msg[3])
@@ -53,7 +56,7 @@ func (c *Client) runRobot() {
 						}
 					}
 					c.Table.Lock.RUnlock()
-
+				// 需要出牌
 				case common.ResShotPoker:
 					time.Sleep(time.Second)
 					c.Table.Lock.RLock()
@@ -61,7 +64,7 @@ func (c *Client) runRobot() {
 						c.autoShotPoker()
 					}
 					c.Table.Lock.RUnlock()
-
+				// 展示牌
 				case common.ResShowPoker:
 					time.Sleep(time.Second)
 					//logs.Debug("robot [%v] role [%v] receive message ResShowPoker turn :%v", c.UserInfo.Username, c.UserInfo.Role, c.Table.GameManager.Turn.UserInfo.Username)
@@ -70,6 +73,7 @@ func (c *Client) runRobot() {
 						c.autoShotPoker()
 					}
 					c.Table.Lock.RUnlock()
+					// 游戏结束
 				case common.ResGameOver:
 					c.Ready = true
 				}
