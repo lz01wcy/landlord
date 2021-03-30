@@ -9,6 +9,7 @@ import (
 	"strconv"
 )
 
+// 首页
 func Index(w http.ResponseWriter, r *http.Request) {
 	ret := make(map[string]interface{})
 	t, err := template.ParseFiles("templates/poker.html")

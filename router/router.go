@@ -1,17 +1,18 @@
 package router
 
 import (
-	"net/http"
-	"landlord/service"
 	"landlord/controllers"
+	"landlord/service"
+	"net/http"
 )
 
+// 路由
 func init() {
 	http.HandleFunc("/", controllers.Index)
 	http.HandleFunc("/login", controllers.Login)
 	http.HandleFunc("/loginOut", controllers.LoginOut)
 	http.HandleFunc("/reg", controllers.Register)
-
+	// ws原来是websocket啊
 	http.HandleFunc("/ws", service.ServeWs)
 
 	// 设置静态目录

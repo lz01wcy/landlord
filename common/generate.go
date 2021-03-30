@@ -1,18 +1,32 @@
 package common
 
 import (
-	"os"
-	"github.com/astaxie/beego/logs"
-	"strconv"
+	"bufio"
 	"encoding/json"
+	"github.com/astaxie/beego/logs"
+	"os"
+	"strconv"
 )
 
+// 生成相应json 1w多行 真的好吗
 func write() {
 	path := "rule.json"
 	_, err := os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			generate()
+			// 创建文件
+			file, err := os.Create("rule.json")
+			defer func() {
+				err = file.Close()
+				if err != nil {
+					logs.Error("generate err: %v", err)
+				}
+			}()
+			if err != nil {
+				panic("create rule.json err:" + err.Error())
+			}
+			// 写入内容
+			generate(bufio.NewWriter(file))
 		} else {
 			logs.Error("rule.json err:%v", err)
 			return
@@ -22,7 +36,7 @@ func write() {
 
 //生成连续num个的单牌的顺子
 func generateSeq(num int, seq []string) (res []string) {
-	for i, _ := range seq {
+	for i := range seq {
 		if i+num > 12 {
 			break
 		}
@@ -41,7 +55,7 @@ func combination(seq []string, num int) (comb []string) {
 		panic("generate err , combination count can not be 0")
 	}
 	if len(seq) < num {
-		logs.Error("seq: %v,num:%d",seq,num)
+		logs.Error("seq: %v,num:%d", seq, num)
 		return
 		//panic("generate err , seq length less than num")
 	}
@@ -50,22 +64,22 @@ func combination(seq []string, num int) (comb []string) {
 	}
 	if len(seq) == num {
 		allSingle := ""
-		for _,single := range seq{
+		for _, single := range seq {
 			allSingle += single
 		}
 		return []string{allSingle}
 	}
-	noFirst := combination(seq[1:],num)
+	noFirst := combination(seq[1:], num)
 	hasFirst := []string(nil)
-	for _,comb := range combination(seq[1:],num-1) {
-		hasFirst = append(hasFirst, string(seq[0])+comb)
+	for _, comb := range combination(seq[1:], num-1) {
+		hasFirst = append(hasFirst, seq[0]+comb)
 	}
 	comb = append(comb, noFirst...)
 	comb = append(comb, hasFirst...)
 	return
 }
 
-func generate() {
+func generate(writer *bufio.Writer) {
 	CARDS := "34567890JQKA2"
 	RULE := map[string][]string{}
 	RULE["single"] = []string{}
@@ -117,7 +131,7 @@ func generate() {
 				for k, v := range seq {
 					if v[0] == seqTrio[i] {
 						copy(seq[k:], seq[k+1:])
-						seq = seq[:len(seq)-1 ]
+						seq = seq[:len(seq)-1]
 						break
 					}
 				}
@@ -150,30 +164,40 @@ func generate() {
 				seq = seq[:len(seq)-1]
 			}
 		}
-		for _,comb := range combination(seq,2){
-			RULE["bomb_single"] = append(RULE["bomb_single"],b+comb)
+		for _, comb := range combination(seq, 2) {
+			RULE["bomb_single"] = append(RULE["bomb_single"], b+comb)
 			if comb[0] != 'w' && comb[0] != 'W' && comb[1] != 'w' && comb[1] != 'W' {
-				RULE["bomb_pair"] = append(RULE["bomb_pair"],b+comb+comb)
+				RULE["bomb_pair"] = append(RULE["bomb_pair"], b+comb+comb)
 			}
 		}
 	}
 
-	res,err := json.Marshal(RULE)
+	res, err := json.Marshal(RULE)
 	if err != nil {
 		panic("json marsha1 RULE err :" + err.Error())
 	}
-	file, err := os.Create("rule.json")
-	defer func(){
-		err = file.Close()
+	//file, err := os.Create("rule.json")
+	//defer func() {
+	//	err = file.Close()
+	//	if err != nil {
+	//		logs.Error("generate err: %v", err)
+	//	}
+	//}()
+	//if err != nil {
+	//	panic("create rule.json err:" + err.Error())
+	//}
+	//_, err = file.Write(res)
+	//if err != nil {
+	//	panic("create rule.json err:" + err.Error())
+	//}
+	if writer != nil {
+		_, err := writer.Write(res)
 		if err != nil {
-			logs.Error("generate err: %v",err)
+			panic("bufio.Writer Write err :" + err.Error())
 		}
-	}()
-	if err != nil {
-		panic("create rule.json err:" + err.Error())
-	}
-	_,err = file.Write(res)
-	if err != nil {
-		panic("create rule.json err:" + err.Error())
+		err = writer.Flush()
+		if err != nil {
+			panic("bufio.Writer Flush err :" + err.Error())
+		}
 	}
 }

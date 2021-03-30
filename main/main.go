@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego/logs"
 	"io"
+	// 导入了router进行初始化
 	_ "landlord/router"
 	"net/http"
 	"os"
@@ -21,7 +22,7 @@ func main() {
 		if gameConf.Db != nil {
 			err = gameConf.Db.Close()
 			if err != nil {
-				logs.Error("main close sqllite db err :%v", err)
+				logs.Error("main close sqlite3 db err :%v", err)
 			}
 		}
 	}()
@@ -38,7 +39,7 @@ func main() {
 	}
 }
 
-func init() {  	//生成pid文件，保存pid
+func init() { //生成pid文件，保存pid
 	pidFileName := "pid"
 	fileInfo, err := os.Stat(pidFileName)
 	if err != nil {
@@ -54,7 +55,7 @@ func init() {  	//生成pid文件，保存pid
 			logs.Error("open pidFile [%s] error :%v", pidFileName, err)
 			return
 		}
-		err = pidFile.Truncate(0)  //清空数据
+		err = pidFile.Truncate(0) //清空数据
 
 		_, err = io.WriteString(pidFile, strconv.Itoa(pid))
 		if err != nil {

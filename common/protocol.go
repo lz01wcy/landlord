@@ -1,5 +1,6 @@
 package common
 
+// 消息类型
 const (
 	ReqCheat = 1
 	ResCheat = 2

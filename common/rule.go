@@ -1,16 +1,20 @@
 package common
 
 import (
-	"sort"
 	"github.com/astaxie/beego/logs"
+	"sort"
 )
 
+// 排序字符串
 func SortStr(pokers string) (sortPokers string) {
+	// 字符串转换为整数
 	runeArr := make([]int, 0)
 	for _, s := range pokers {
 		runeArr = append(runeArr, int(s))
 	}
+	// 排序
 	sort.Ints(runeArr)
+	//再转换字符串
 	res := make([]byte, 0)
 	for _, v := range runeArr {
 		res = append(res, byte(v))
@@ -40,17 +44,25 @@ func IsContains(parent, child string) (result bool) {
 }
 
 //将牌编号转换为扑克牌
-func ToPokers(num []int) (string) {
+func ToPokers(num []int) string {
 	totalCards := "A234567890JQK"
 	res := make([]byte, 0)
 	for _, poker := range num {
-		if poker == 52 {
+		switch poker {
+		case 52:
 			res = append(res, 'W')
-		} else if poker == 53 {
+		case 53:
 			res = append(res, 'w')
-		} else {
+		default:
 			res = append(res, totalCards[poker%13])
 		}
+		//if poker == 52 {
+		//	res = append(res, 'W')
+		//} else if poker == 53 {
+		//	res = append(res, 'w')
+		//} else {
+		//	res = append(res, totalCards[poker%13])
+		//}
 	}
 	return string(res)
 }
@@ -86,7 +98,7 @@ func pokersInHand(num []int, findPokers string) (pokers []int) {
 	for _, poker := range findPokers {
 		poker := ToPoker(byte(poker))
 	out:
-		for _,pItem := range poker {
+		for _, pItem := range poker {
 			for _, n := range num {
 				if pItem == n && !isInResPokers(n) {
 					pokers = append(pokers, pItem)

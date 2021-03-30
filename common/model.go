@@ -1,5 +1,6 @@
 package common
 
+// 账号信息结构体
 type Account struct {
 	Id          int    `json:"id" db:"id"`
 	Email       string `json:"email" db:"email"`

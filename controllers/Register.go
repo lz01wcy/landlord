@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// 注册
 func Register(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -25,6 +26,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			logs.Error("user request Register - err : %v", err)
 		}
 	}()
+	// 读取用户名和密码
 	username := r.FormValue("username")
 	if len(username) == 0 {
 		username = r.PostFormValue("username")
@@ -43,9 +45,13 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 	logs.Debug("user request register : username=%v, password=%v ", username, password)
 
+	// 账号结构体
 	var account = common.Account{}
+	// 读数据库
 	row := common.GameConfInfo.Db.QueryRow("select * from account where username=?", username)
+	// 写入账户信息
 	err := row.Scan(&account.Id, &account.Email, &account.Username, &account.Password, &account.Coin, &account.CreatedDate, &account.UpdateDate)
+	// err不空 即没读取 即未注册
 	if err != nil {
 		now := time.Now().Format("2006-01-02 15:04:05")
 		md5Password := fmt.Sprintf("%x", md5.Sum([]byte(password)))

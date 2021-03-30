@@ -1,25 +1,32 @@
 package common
 
 import (
-	"os"
-	"io"
 	"encoding/json"
 	"fmt"
+	"io"
+	"os"
 )
 
 var (
-	Pokers       = make(map[string]*Combination, 16384)
+	// 牌型的组合
+	Pokers = make(map[string]*Combination, 16384)
+	// 牌型
 	TypeToPokers = make(map[string][]*Combination, 38)
 )
 
+// 组合
 type Combination struct {
 	Type  string
 	Score int
 	Poker string
 }
 
+// 说白了是Pokers和TypeToPokers的生成
+// 读json比直接生成快吗
 func init() {
-	path := "rule.json"
+	// 读取rule.json
+	// 不存在则创建
+	path := "./rule.json"
 	_, err := os.Stat(path)
 	if os.IsNotExist(err) {
 		write()
@@ -40,7 +47,7 @@ func init() {
 		for i := 0; i < readNum; i++ {
 			jsonStrByte = append(jsonStrByte, buf[i])
 		}
-		if 0 == readNum {
+		if readNum == 0 {
 			break
 		}
 	}

@@ -11,6 +11,7 @@ var (
 	gameConf = &common.GameConfInfo
 )
 
+// 初始化设置
 func initConf() (err error) {
 	environment := os.Getenv("ENV")
 	if environment != "dev" && environment != "testing" && environment != "product" {

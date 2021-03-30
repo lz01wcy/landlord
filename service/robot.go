@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// 运行机器人
 func (c *Client) runRobot() {
 	for {
 		select {
@@ -13,7 +14,7 @@ func (c *Client) runRobot() {
 			if !ok {
 				return
 			}
-			wsRequest(msg, c)
+			c.wsRequest(msg)
 		case msg, ok := <-c.toRobot:
 			if !ok {
 				return
@@ -24,28 +25,28 @@ func (c *Client) runRobot() {
 				return
 			}
 			if act, ok := msg[0].(int); ok {
-				protocolCode := int(act)
+				protocolCode := act
 				switch protocolCode {
 				case common.ResDealPoker:
 					time.Sleep(time.Second)
 					c.Table.Lock.RLock()
-					if c.Table.GameManage.FirstCallScore == c {
+					if c.Table.GameManager.FirstCallScore == c {
 						c.autoCallScore()
 					}
 					c.Table.Lock.RUnlock()
 
 				case common.ResCallScore:
 					if len(msg) < 4 {
-						logs.Error("ResCallScore msg err:%v",msg)
+						logs.Error("ResCallScore msg err:%v", msg)
 						return
 					}
 					time.Sleep(time.Second)
 					c.Table.Lock.RLock()
-					if c.Table.GameManage.Turn == c && !c.IsCalled {
+					if c.Table.GameManager.Turn == c && !c.IsCalled {
 						var callEnd bool
-						logs.Debug("ResCallScore %t",msg[3])
+						logs.Debug("ResCallScore %t", msg[3])
 						if res, ok := msg[3].(bool); ok {
-							callEnd = bool(res)
+							callEnd = res
 						}
 						if !callEnd {
 							c.autoCallScore()
@@ -56,16 +57,16 @@ func (c *Client) runRobot() {
 				case common.ResShotPoker:
 					time.Sleep(time.Second)
 					c.Table.Lock.RLock()
-					if c.Table.GameManage.Turn == c {
+					if c.Table.GameManager.Turn == c {
 						c.autoShotPoker()
 					}
 					c.Table.Lock.RUnlock()
 
 				case common.ResShowPoker:
 					time.Sleep(time.Second)
-					//logs.Debug("robot [%v] role [%v] receive message ResShowPoker turn :%v", c.UserInfo.Username, c.UserInfo.Role, c.Table.GameManage.Turn.UserInfo.Username)
+					//logs.Debug("robot [%v] role [%v] receive message ResShowPoker turn :%v", c.UserInfo.Username, c.UserInfo.Role, c.Table.GameManager.Turn.UserInfo.Username)
 					c.Table.Lock.RLock()
-					if c.Table.GameManage.Turn == c || (c.Table.GameManage.Turn == nil && c.UserInfo.Role == RoleLandlord) {
+					if c.Table.GameManager.Turn == c || (c.Table.GameManager.Turn == nil && c.UserInfo.Role == RoleLandlord) {
 						c.autoShotPoker()
 					}
 					c.Table.Lock.RUnlock()
@@ -83,15 +84,15 @@ func (c *Client) autoShotPoker() {
 	defer func() {
 		err := recover()
 		if err != nil {
-			logs.Warn("autoShotPoker err : %v",err)
+			logs.Warn("autoShotPoker err : %v", err)
 		}
 	}()
 	logs.Debug("robot [%v] auto-shot poker", c.UserInfo.Username)
 	shotPokers := make([]int, 0)
-	if len(c.Table.GameManage.LastShotPoker) == 0 || c.Table.GameManage.LastShotClient == c {
+	if len(c.Table.GameManager.LastShotPoker) == 0 || c.Table.GameManager.LastShotClient == c {
 		shotPokers = append(shotPokers, c.HandPokers[0])
 	} else {
-		shotPokers = common.CardsAbove(c.HandPokers, c.Table.GameManage.LastShotPoker)
+		shotPokers = common.CardsAbove(c.HandPokers, c.Table.GameManager.LastShotPoker)
 	}
 	float64Pokers := make([]interface{}, 0)
 	for _, poker := range shotPokers {
@@ -108,7 +109,7 @@ func (c *Client) autoCallScore() {
 	defer func() {
 		err := recover()
 		if err != nil {
-			logs.Warn("autoCallScore err : %v",err)
+			logs.Warn("autoCallScore err : %v", err)
 		}
 	}()
 	logs.Debug("robot [%v] autoCallScore", c.UserInfo.Username)
