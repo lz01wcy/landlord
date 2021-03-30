@@ -24,25 +24,25 @@ PG.Poker.comparePoker = function (a, b) {
     }
     a = a % 13;
     b = b % 13;
-    if (a == 1 || a == 0) {
+    if (a === 1 || a === 0) {
         a += 13;
     }
-    if (b == 1 || b == 0) {
+    if (b === 1 || b === 0) {
         b += 13;
     }
     return -(a - b);
 };
 
 PG.Poker.toCards = function (pokers) {
-    var cards = [];
-    for (var i = 0; i < pokers.length; i++) {
-        var pid = pokers[i];
+    const cards = [];
+    for (let i = 0; i < pokers.length; i++) {
+        let pid = pokers[i];
         if (pid instanceof Array) {
             pid = pid[0];
         }
-        if (pid == 52) {
+        if (pid === 52) {
             cards.push('W');
-        } else if (pid == 53) {
+        } else if (pid === 53) {
             cards.push('w');
         } else {
             cards.push("A234567890JQK"[pid % 13]);
@@ -53,17 +53,17 @@ PG.Poker.toCards = function (pokers) {
 };
 
 PG.Poker.canCompare = function (pokersA, pokersB) {
-    var cardsA = this.toCards(pokersA);
-    var cardsB = this.toCards(pokersB);
-    return PG.Rule.cardsValue(cardsA)[0] == PG.Rule.cardsValue(cardsB)[0];
+    const cardsA = this.toCards(pokersA);
+    const cardsB = this.toCards(pokersB);
+    return PG.Rule.cardsValue(cardsA)[0] === PG.Rule.cardsValue(cardsB)[0];
 };
 
 PG.Poker.toPokers = function (pokerInHands, cards) {
-    var pokers = [];
-    for (var i = 0; i < cards.length; i++) {
-        var candidates = this.toPoker(cards[i]);
-        for (var j = 0; j < candidates.length; j++) {
-            if (pokerInHands.indexOf(candidates[j]) != -1 && pokers.indexOf(candidates[j]) == -1) {
+    const pokers = [];
+    for (let i = 0; i < cards.length; i++) {
+        const candidates = this.toPoker(cards[i]);
+        for (let j = 0; j < candidates.length; j++) {
+            if (pokerInHands.indexOf(candidates[j]) !== -1 && pokers.indexOf(candidates[j]) === -1) {
                 pokers.push(candidates[j]);
                 break
             }
@@ -74,15 +74,15 @@ PG.Poker.toPokers = function (pokerInHands, cards) {
 
 PG.Poker.toPoker = function (card) {
 
-    var cards = "A234567890JQK";
-    for (var i = 0; i < 13; i++) {
-        if (card == cards[i]) {
+    const cards = "A234567890JQK";
+    for (let i = 0; i < 13; i++) {
+        if (card === cards[i]) {
             return [i, i + 13, i + 13 * 2, i + 13 * 3];
         }
     }
-    if (card == 'W') {
+    if (card === 'W') {
         return [52];
-    } else if (card == 'w') {
+    } else if (card === 'w') {
         return [53];
     }
     return [54];
@@ -93,12 +93,12 @@ PG.Rule = {};
 
 PG.Rule.cardsAbove = function (handCards, turnCards) {
 
-    var turnValue = this.cardsValue(turnCards);
-    if (turnValue[0] == '') {
+    const turnValue = this.cardsValue(turnCards);
+    if (turnValue[0] === '') {
         return '';
     }
     handCards.sort(this.sorter);
-    var oneRule = PG.RuleList[turnValue[0]];
+    let oneRule = PG.RuleList[turnValue[0]];
     for (var i = turnValue[1] + 1; i < oneRule.length; i++) {
         if (this.containsAll(handCards, oneRule[i])) {
             return oneRule[i];
@@ -123,18 +123,18 @@ PG.Rule.cardsAbove = function (handCards, turnCards) {
 PG.Rule.bestShot = function (handCards) {
 
     handCards.sort(this.sorter);
-    var shot = '';
-    var len = this._CardsType.length;
+    let shot = '';
+    const len = this._CardsType.length;
     for (var i = 2; i < len; i++) {
         var oneRule = PG.RuleList[this._CardsType[i]];
-        for (var j = 0; j < oneRule.length; j++) {
+        for (let j = 0; j < oneRule.length; j++) {
             if (oneRule[j].length > shot.length && this.containsAll(handCards, oneRule[j])) {
                 shot = oneRule[j];
             }
         }
     }
 
-    if (shot == '') {
+    if (shot === '') {
         oneRule = PG.RuleList['bomb'];
         for (var i = 0; i < oneRule.length; i++) {
             if (this.containsAll(handCards, oneRule[i])) {
@@ -159,16 +159,18 @@ PG.Rule._CardsType = [
     'bomb_pair', 'bomb_single'];
 
 PG.Rule.sorter = function (a, b) {
-    var card_str = '34567890JQKA2wW';
+    const card_str = '34567890JQKA2wW';
     return card_str.indexOf(a) - card_str.indexOf(b);
 };
 
 PG.Rule.index_of = function (array, ele) {
-    if (array[0].length != ele.length) {
+    if (array[0].length !== ele.length) {
         return -1;
     }
-    for (var i = 0, l = array.length; i < l; i++) {
-        if (array[i] == ele) {
+    let i = 0;
+    const l = array.length;
+    for (; i < l; i++) {
+        if (array[i] === ele) {
             return i;
         }
     }
@@ -176,10 +178,12 @@ PG.Rule.index_of = function (array, ele) {
 };
 
 PG.Rule.containsAll = function (parent, child) {
-    var index = 0;
-    for (var i = 0, l = child.length; i < l; i++) {
+    let index = 0;
+    let i = 0;
+    const l = child.length;
+    for (; i < l; i++) {
         index = parent.indexOf(child[i], index);
-        if (index == -1) {
+        if (index === -1) {
             return false;
         }
         index += 1;
@@ -189,21 +193,21 @@ PG.Rule.containsAll = function (parent, child) {
 
 PG.Rule.cardsValue = function (cards) {
 
-    if (typeof(cards) != 'string') {
+    if (typeof (cards) != 'string') {
         cards.sort(this.sorter);
         cards = cards.join('');
     }
 
-    if (cards == 'wW')
+    if (cards === 'wW')
         return ['rocket', 2000];
 
     var index = this.index_of(PG.RuleList['bomb'], cards);
     if (index >= 0)
         return ['bomb', 1000 + index];
 
-    var length = this._CardsType.length;
-    for (var i = 2; i < length; i++) {
-        var typeName = this._CardsType[i];
+    const length = this._CardsType.length;
+    for (let i = 2; i < length; i++) {
+        const typeName = this._CardsType[i];
         var index = this.index_of(PG.RuleList[typeName], cards);
         if (index >= 0)
             return [typeName, index];
@@ -214,20 +218,20 @@ PG.Rule.cardsValue = function (cards) {
 
 PG.Rule.compare = function (cardsA, cardsB) {
 
-    if (cardsA.length == 0 && cardsB.length == 0) {
+    if (cardsA.length === 0 && cardsB.length === 0) {
         return 0;
     }
-    if (cardsA.length == 0) {
+    if (cardsA.length === 0) {
         return -1;
     }
-    if (cardsB.length == 0) {
+    if (cardsB.length === 0) {
         return 1;
     }
 
-    var valueA = this.cardsValue(cardsA);
-    var valueB = this.cardsValue(cardsB);
+    const valueA = this.cardsValue(cardsA);
+    const valueB = this.cardsValue(cardsB);
 
-    if ((valueA[1] < 1000 && valueB[1] < 1000) && (valueA[0] != valueB[0])) {
+    if ((valueA[1] < 1000 && valueB[1] < 1000) && (valueA[0] !== valueB[0])) {
         console.log('Error: Compare ', cardsA, cardsB);
     }
 
@@ -235,13 +239,13 @@ PG.Rule.compare = function (cardsA, cardsB) {
 };
 
 PG.Rule.shufflePoker = function () {
-    var pokers = [];
-    for (var i = 0; i < 54; i++) {
+    const pokers = [];
+    for (let i = 0; i < 54; i++) {
         pokers.push(i);
     }
 
-    var currentIndex = pokers.length, temporaryValue, randomIndex;
-    while (0 != currentIndex) {
+    let currentIndex = pokers.length, temporaryValue, randomIndex;
+    while (0 !== currentIndex) {
         randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex -= 1;
 

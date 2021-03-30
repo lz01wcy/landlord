@@ -7,35 +7,47 @@
  * Released under MIT License 
  */
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+const __extends = (this && this.__extends) || (function () {
+    const extendStatics = Object.setPrototypeOf ||
+        ({__proto__: []} instanceof Array && function (d, b) {
+            d.__proto__ = b;
+        }) ||
+        function (d, b) {
+            for (let p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+        };
     return function (d, b) {
         extendStatics(d, b);
-        function __() { this.constructor = d; }
+
+        function __() {
+            this.constructor = d;
+        }
+
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
 var PhaserInput;
 (function (PhaserInput) {
-    var InputType;
+    let InputType;
     (function (InputType) {
         InputType[InputType["text"] = 0] = "text";
         InputType[InputType["password"] = 1] = "password";
         InputType[InputType["number"] = 2] = "number";
     })(InputType = PhaserInput.InputType || (PhaserInput.InputType = {}));
-    var InputElement = (function () {
+    const InputElement = (function () {
         function InputElement(game, id, type, value, focusIn, focusOut) {
-            if (type === void 0) { type = InputType.text; }
-            if (value === void 0) { value = ''; }
-            var _this = this;
+            if (type === void 0) {
+                type = InputType.text;
+            }
+            if (value === void 0) {
+                value = '';
+            }
+            const _this = this;
             this.id = id;
             this.type = type;
             this.game = game;
             this.focusIn = focusIn;
             this.focusOut = focusOut;
-            var canvasTopX = this.game.canvas.getBoundingClientRect().top + document.body.scrollTop;
+            const canvasTopX = this.game.canvas.getBoundingClientRect().top + document.body.scrollTop;
             this.element = document.createElement('input');
             this.element.id = id;
             this.element.style.position = 'absolute';
@@ -58,6 +70,7 @@ var PhaserInput;
             });
             document.body.appendChild(this.element);
         }
+
         InputElement.prototype.addKeyUpListener = function (callback) {
             this.keyUpCallback = callback;
             document.addEventListener('keyup', this.keyUpCallback);
@@ -69,8 +82,7 @@ var PhaserInput;
         InputElement.prototype.preventKeyPropagation = function (evt) {
             if (evt.stopPropagation) {
                 evt.stopPropagation();
-            }
-            else {
+            } else {
                 event.cancelBubble = true;
             }
         };
@@ -90,8 +102,7 @@ var PhaserInput;
             }
             if (this.type === InputType.text || this.type === InputType.password) {
                 this.element.maxLength = parseInt(max, 10);
-            }
-            else if (this.type === InputType.number) {
+            } else if (this.type === InputType.number) {
                 this.element.max = max;
                 if (min === undefined) {
                     return;
@@ -110,12 +121,12 @@ var PhaserInput;
             configurable: true
         });
         InputElement.prototype.focus = function () {
-            var _this = this;
+            const _this = this;
             this.element.focus();
             if (!this.game.device.desktop && this.game.device.chrome) {
-                var originalWidth_1 = window.innerWidth, originalHeight_1 = window.innerHeight;
-                var kbAppeared_1 = false;
-                var interval_1 = setInterval(function () {
+                const originalWidth_1 = window.innerWidth, originalHeight_1 = window.innerHeight;
+                let kbAppeared_1 = false;
+                const interval_1 = setInterval(function () {
                     if (originalWidth_1 > window.innerWidth || originalHeight_1 > window.innerHeight) {
                         kbAppeared_1 = true;
                     }
@@ -173,17 +184,20 @@ var PhaserInput;
 })(PhaserInput || (PhaserInput = {}));
 var PhaserInput;
 (function (PhaserInput) {
-    var ForceCase;
+    let ForceCase;
     (function (ForceCase) {
         ForceCase[ForceCase["none"] = 0] = "none";
         ForceCase[ForceCase["lower"] = 1] = "lower";
         ForceCase[ForceCase["upper"] = 2] = "upper";
     })(ForceCase = PhaserInput.ForceCase || (PhaserInput.ForceCase = {}));
-    var InputField = (function (_super) {
+    const InputField = (function (_super) {
         __extends(InputField, _super);
+
         function InputField(game, x, y, inputOptions) {
-            if (inputOptions === void 0) { inputOptions = {}; }
-            var _this = _super.call(this, game, x, y) || this;
+            if (inputOptions === void 0) {
+                inputOptions = {};
+            }
+            const _this = _super.call(this, game, x, y) || this;
             _this.focusOutOnEnter = true;
             _this.placeHolder = null;
             _this.box = null;
@@ -257,6 +271,7 @@ var PhaserInput;
             });
             return _this;
         }
+
         Object.defineProperty(InputField.prototype, "width", {
             get: function () {
                 return this.inputOptions.width;
@@ -313,8 +328,7 @@ var PhaserInput;
                     this.zoomIn();
                 }
                 this.startFocus();
-            }
-            else {
+            } else {
                 if (this.focus === true) {
                     this.endFocus();
                     if (this.inputOptions.zoom) {
@@ -339,7 +353,7 @@ var PhaserInput;
             this.cnt = 0;
         };
         InputField.prototype.endFocus = function () {
-            var _this = this;
+            const _this = this;
             if (!this.focus) {
                 return;
             }
@@ -356,8 +370,7 @@ var PhaserInput;
                 setTimeout(function () {
                     _this.domElement.blur();
                 }, 0);
-            }
-            else {
+            } else {
                 this.domElement.blur();
             }
             if (!this.game.device.desktop) {
@@ -366,7 +379,7 @@ var PhaserInput;
             }
         };
         InputField.prototype.startFocus = function () {
-            var _this = this;
+            const _this = this;
             this.focus = true;
             if (null !== this.placeHolder) {
                 this.placeHolder.visible = false;
@@ -375,8 +388,7 @@ var PhaserInput;
                 setTimeout(function () {
                     _this.keyUpProcessor();
                 }, 0);
-            }
-            else {
+            } else {
                 this.keyUpProcessor();
             }
             if (!this.game.device.desktop) {
@@ -392,33 +404,28 @@ var PhaserInput;
             }
         };
         InputField.prototype.updateText = function () {
-            var text = '';
+            let text = '';
             if (this.inputOptions.type === PhaserInput.InputType.password) {
-                for (var i = 0; i < this.value.length; i++) {
+                for (let i = 0; i < this.value.length; i++) {
                     text += '*';
                 }
-            }
-            else if (this.inputOptions.type === PhaserInput.InputType.number) {
-                var val = parseInt(this.value);
+            } else if (this.inputOptions.type === PhaserInput.InputType.number) {
+                const val = parseInt(this.value);
                 if (val < parseInt(this.inputOptions.min)) {
                     text = this.value = this.domElement.value = this.inputOptions.min;
-                }
-                else if (val > parseInt(this.inputOptions.max)) {
+                } else if (val > parseInt(this.inputOptions.max)) {
                     text = this.value = this.domElement.value = this.inputOptions.max;
-                }
-                else {
+                } else {
                     text = this.value;
                 }
-            }
-            else {
+            } else {
                 text = this.value;
             }
             this.text.setText(text);
             if (this.text.width > this.inputOptions.width) {
                 this.text.anchor.x = 1;
                 this.text.x = this.inputOptions.padding + this.inputOptions.width;
-            }
-            else {
+            } else {
                 switch (this.inputOptions.textAlign) {
                     case 'left':
                         this.text.anchor.set(0, 0);
@@ -438,8 +445,7 @@ var PhaserInput;
         InputField.prototype.updateCursor = function () {
             if (this.text.width > this.inputOptions.width || this.inputOptions.textAlign === 'right') {
                 this.cursor.x = this.inputOptions.padding + this.inputOptions.width;
-            }
-            else {
+            } else {
                 switch (this.inputOptions.textAlign) {
                     case 'left':
                         this.cursor.x = this.inputOptions.padding + this.getCaretPosition();
@@ -451,14 +457,14 @@ var PhaserInput;
             }
         };
         InputField.prototype.getCaretPosition = function () {
-            var caretPosition = this.domElement.getCaretPosition();
+            const caretPosition = this.domElement.getCaretPosition();
             if (-1 === caretPosition) {
                 return this.text.width;
             }
-            var text = this.value;
+            let text = this.value;
             if (this.inputOptions.type === PhaserInput.InputType.password) {
                 text = '';
-                for (var i = 0; i < this.value.length; i++) {
+                for (let i = 0; i < this.value.length; i++) {
                     text += '*';
                 }
             }
@@ -466,13 +472,13 @@ var PhaserInput;
             return this.offscreenText.width;
         };
         InputField.prototype.setCaretOnclick = function (e) {
-            var localX = (this.text.toLocal(new PIXI.Point(e.x, e.y), this.game.world)).x;
+            let localX = (this.text.toLocal(new PIXI.Point(e.x, e.y), this.game.world)).x;
             if (this.inputOptions.textAlign && this.inputOptions.textAlign === 'center') {
                 localX += this.text.width / 2;
             }
-            var characterWidth = this.text.width / this.value.length;
-            var index = 0;
-            for (var i = 0; i < this.value.length; i++) {
+            const characterWidth = this.text.width / this.value.length;
+            let index = 0;
+            for (let i = 0; i < this.value.length; i++) {
                 if (localX >= i * characterWidth && localX <= (i + 1) * characterWidth) {
                     index = i;
                     break;
@@ -487,10 +493,10 @@ var PhaserInput;
         };
         InputField.prototype.updateSelection = function () {
             if (this.domElement.hasSelection) {
-                var text = this.value;
+                let text = this.value;
                 if (this.inputOptions.type === PhaserInput.InputType.password) {
                     text = '';
-                    for (var i = 0; i < this.value.length; i++) {
+                    for (let i = 0; i < this.value.length; i++) {
                         text += '*';
                     }
                 }
@@ -505,8 +511,7 @@ var PhaserInput;
                         this.selection.x = this.inputOptions.padding + this.inputOptions.width / 2 - this.text.width / 2;
                         break;
                 }
-            }
-            else {
+            } else {
                 this.selection.clear();
             }
         };
@@ -514,14 +519,13 @@ var PhaserInput;
             if (PhaserInput.Zoomed) {
                 return;
             }
-            var bounds = this.getBounds();
+            const bounds = this.getBounds();
             if (window.innerHeight > window.innerWidth) {
                 this.windowScale = this.game.width / (bounds.width * 1.5);
-            }
-            else {
+            } else {
                 this.windowScale = (this.game.width / 2) / (bounds.width * 1.5);
             }
-            var offsetX = ((this.game.width - bounds.width * 1.5) / 2) / this.windowScale;
+            const offsetX = ((this.game.width - bounds.width * 1.5) / 2) / this.windowScale;
             this.game.world.scale.set(this.game.world.scale.x * this.windowScale, this.game.world.scale.y * this.windowScale);
             this.game.world.pivot.set(bounds.x - offsetX, bounds.y - this.inputOptions.padding * 2);
             PhaserInput.Zoomed = true;
@@ -558,12 +562,13 @@ var PhaserInput;
             this.setText();
         };
         InputField.prototype.setText = function (text) {
-            if (text === void 0) { text = ''; }
+            if (text === void 0) {
+                text = '';
+            }
             if (null !== this.placeHolder) {
                 if (text.length > 0) {
                     this.placeHolder.visible = false;
-                }
-                else {
+                } else {
                     this.placeHolder.visible = true;
                 }
             }
@@ -590,10 +595,11 @@ var PhaserInput;
 })(PhaserInput || (PhaserInput = {}));
 var PhaserInput;
 (function (PhaserInput) {
-    var InputBox = (function (_super) {
+    const InputBox = (function (_super) {
         __extends(InputBox, _super);
+
         function InputBox(game, inputOptions) {
-            var _this = _super.call(this, game, 0, 0) || this;
+            const _this = _super.call(this, game, 0, 0) || this;
             _this.bgColor = (inputOptions.backgroundColor) ? parseInt(inputOptions.backgroundColor.slice(1), 16) : 0xffffff;
             _this.borderRadius = inputOptions.borderRadius || 0;
             _this.borderWidth = inputOptions.borderWidth || 1;
@@ -612,6 +618,7 @@ var PhaserInput;
             _this.drawBox();
             return _this;
         }
+
         InputBox.prototype.resize = function (newWidth) {
             this.boxWidth = this.padding * 2 + newWidth;
             this.drawBox();
@@ -622,8 +629,7 @@ var PhaserInput;
                 .lineStyle(this.borderWidth, this.borderColor, this.boxAlpha);
             if (this.borderRadius > 0) {
                 this.drawRoundedRect(0, 0, this.boxWidth, this.boxHeight, this.borderRadius);
-            }
-            else {
+            } else {
                 this.drawRect(0, 0, this.boxWidth, this.boxHeight);
             }
         };
@@ -633,15 +639,17 @@ var PhaserInput;
 })(PhaserInput || (PhaserInput = {}));
 var PhaserInput;
 (function (PhaserInput) {
-    var SelectionHighlight = (function (_super) {
+    const SelectionHighlight = (function (_super) {
         __extends(SelectionHighlight, _super);
+
         function SelectionHighlight(game, inputOptions) {
-            var _this = _super.call(this, game, inputOptions.padding, inputOptions.padding) || this;
+            const _this = _super.call(this, game, inputOptions.padding, inputOptions.padding) || this;
             _this.inputOptions = inputOptions;
             return _this;
         }
+
         SelectionHighlight.prototype.updateSelection = function (rect) {
-            var color = Phaser.Color.webToColor(this.inputOptions.selectionColor);
+            const color = Phaser.Color.webToColor(this.inputOptions.selectionColor);
             this.clear();
             this.beginFill(SelectionHighlight.rgb2hex(color), color.a);
             this.drawRect(rect.x, rect.y, rect.width, rect.height - this.inputOptions.padding);
@@ -657,11 +665,12 @@ var PhaserInput;
 })(PhaserInput || (PhaserInput = {}));
 var PhaserInput;
 (function (PhaserInput) {
-    var TextMask = (function (_super) {
+    const TextMask = (function (_super) {
         __extends(TextMask, _super);
+
         function TextMask(game, inputOptions) {
-            var _this = _super.call(this, game, inputOptions.padding, inputOptions.padding) || this;
-            var height = inputOptions.height;
+            const _this = _super.call(this, game, inputOptions.padding, inputOptions.padding) || this;
+            let height = inputOptions.height;
             if (inputOptions.font) {
                 height = Math.max(parseInt(inputOptions.font.substr(0, inputOptions.font.indexOf('px')), 10), height);
             }
@@ -670,6 +679,7 @@ var PhaserInput;
             _this.drawMask();
             return _this;
         }
+
         TextMask.prototype.resize = function (newWidth) {
             this.maskWidth = newWidth;
             this.drawMask();
@@ -690,19 +700,21 @@ var PhaserInput;
     PhaserInput.KeyboardOpen = false;
     PhaserInput.onKeyboardOpen = new Phaser.Signal();
     PhaserInput.onKeyboardClose = new Phaser.Signal();
-    var Plugin = (function (_super) {
+    const Plugin = (function (_super) {
         __extends(Plugin, _super);
+
         function Plugin(game, parent) {
-            var _this = _super.call(this, game, parent) || this;
+            const _this = _super.call(this, game, parent) || this;
             _this.addInputFieldFactory();
             return _this;
         }
+
         Plugin.prototype.addInputFieldFactory = function () {
             Phaser.GameObjectFactory.prototype.inputField = function (x, y, inputOptions, group) {
                 if (group === undefined) {
                     group = this.world;
                 }
-                var nineSliceObject = new PhaserInput.InputField(this.game, x, y, inputOptions);
+                const nineSliceObject = new PhaserInput.InputField(this.game, x, y, inputOptions);
                 return group.add(nineSliceObject);
             };
             Phaser.GameObjectCreator.prototype.inputField = function (x, y, inputOptions) {
