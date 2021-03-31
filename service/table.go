@@ -85,10 +85,16 @@ func (table *Table) gameOver(client *Client) {
 		// 每个人的手牌
 		for _, cc := range table.TableClients {
 			if cc != c {
-				userPokers := make([]common.PokerValInt, 0, len(cc.HandPokers)+1)
-				userPokers = append(userPokers, common.PokerValInt(cc.UserInfo.UserId))
-				userPokers = append(userPokers, cc.HandPokers...)
-				res = append(res, cc.UserInfo.UserId)
+				//userPokers := make([]int, 0, len(cc.HandPokers)+1)
+				//userPokers = append(userPokers, int(cc.UserInfo.UserId))
+				//userPokers = append(userPokers, cc.HandPokers...)
+				//res = append(res, userPokers)
+				userPokers := make([]int, 0, len(cc.HandPokers)+1)
+				userPokers = append(userPokers, int(cc.UserInfo.UserId))
+				for _, poker := range cc.HandPokers {
+					userPokers = append(userPokers, int(poker))
+				}
+				res = append(res, userPokers)
 			}
 		}
 		// 向客户端发出消息
