@@ -1,4 +1,4 @@
-const symbolPath = {
+var symbolPath = {
     'a': 'M6,200V183H23L58,0H78L117,183H131V200H85V183H97L92,156H46L42,183H54V200H6zM88,135L68,37L49,135H88z',
     '2': 'M10,200L11,187C15,149,23,136,70,97C93,78,100,68,101,57C104,31,81,23,65,23C46,22,23,34,35,62L12,68C8,43,12,18,33,8C61,-6,96,-1,115,21C127,36,129,56,123,72C104,113,39,131,35,179H105V152H127V200L10,200z',
     '3': 'M2,156L18,145C31,167,47,181,70,178C104,176,119,140,112,113C105,89,76,77,53,90C47,93,43,96,41,96C39,96,33,85,34,82C50,59,87,21,87,21H28V47H6V0H120V16C120,16,90,48,80,64C104,65,125,81,132,105C136,118,135,148,129,160C119,182,94,199,71,200C33,202,12,176,2,156L2,156z',
@@ -27,10 +27,10 @@ const symbolPath = {
     'r': 'M44,60,C45,56,-3,33,0,70,C2,107,39,146,48,150,C57,154,12,107,12,77,C12,45,43,65,44,60,M37,65,C31,64,20,60,19,81,C19,100,63,158,65,149,C65,139,33,102,37,65,M86,56,C87,52,38,28,40,66,C43,103,69,141,78,148,C86,155,54,102,54,71,C54,39,86,60,86,56,M82,65,C77,64,59,54,59,74,C60,95,82,146,84,138,C86,132,78,102,82,65,M154,60,C153,56,203,33,200,70,C197,107,159,146,151,150,C142,154,187,107,187,77,C187,45,155,65,154,60,M161,65,C167,64,179,60,180,81,C181,100,137,158,135,149,C134,139,165,102,161,65,M113,56,C112,52,161,28,158,66,C155,103,130,141,122,148,C114,155,145,102,145,71,C145,39,114,60,113,56,M117,65,C123,64,141,54,141,74,C140,95,118,146,116,138,C114,132,121,102,117,65z'
     //Nine - for 99, remove remark for below line and add a comma to upper line
     //'n': 'M157,89C159,188,80,211,16,196L23,160C62,172,100,167,107,119C93,127,83,133,62,132C28,133,0,113,0,70C0,25,37,0,78,0C137,0,157,41,157,89M105,56C100,42,92,34,77,33C59,33,49,49,49,69C52,101,83,104,107,95C107,82,108,66,105,56z'
-}, fixSuit = function (suit) {
+}, fixSuit = function(suit) {
     //hearts, diamonds, spades, clubs
     return (suit || 'h').substr(0, 1).toLowerCase();
-}, fixSymbol = function (symbol) {
+}, fixSymbol = function(symbol) {
     //A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K, JOKER, NINE, CROWN
     symbol = (symbol || 'o').toString().toLowerCase();
     return symbol.substr((symbol.match(/jo|10|cr/)) ? 1 : 0, 1);
@@ -53,12 +53,12 @@ const symbolPath = {
  *     canvas.drawPokerCard (0, 400, 100, 'hearts', 'O');
  *     canvas.drawPokerCard (0, 200, 100, 'd', 'Q');
  */
-CanvasRenderingContext2D.prototype.drawPokerCard = function (x, y, size, suit, point) {
-    const ax = function (n) {
+CanvasRenderingContext2D.prototype.drawPokerCard = function(x, y, size, suit, point) {
+    var ax = function(n) {
         return x + n * size / 200;
-    }, ay = function (n) {
+    }, ay = function(n) {
         return y + n * size / 200;
-    }, as = function (n) {
+    }, as = function(n) {
         return n * size / 200;
     };
 
@@ -114,12 +114,12 @@ CanvasRenderingContext2D.prototype.drawPokerCard = function (x, y, size, suit, p
  *     canvas.drawPokerBack (10, 10, 300, '#a22', '#b55')
  *     canvas.drawPokerBack (375, 400, 100, '#2E319C', '#7A7BB8');
  */
-CanvasRenderingContext2D.prototype.drawPokerBack = function (x, y, size, foregroundColor, backgroundColor) {
-    const ax = function (n) {
+CanvasRenderingContext2D.prototype.drawPokerBack = function(x, y, size, foregroundColor, backgroundColor) {
+    var ax = function(n) {
         return x + n * size / 200;
-    }, ay = function (n) {
+    }, ay = function(n) {
         return y + n * size / 200;
-    }, as = function (n) {
+    }, as = function(n) {
         return n * size / 200;
     };
 
@@ -168,7 +168,7 @@ CanvasRenderingContext2D.prototype.drawPokerBack = function (x, y, size, foregro
  *     canvas.roundRect (0, 0, 200, 200, 30);
  *     canvas.roundRect (50, 50, 100, 100, 30, true);
  */
-CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius, direction) {
+CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius, direction) {
     width = width || 200;
     height = height || 200;
     radius = radius || 20;
@@ -211,7 +211,7 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, ra
  *     canvas.strokeRoundRect (0, 0, 200, 200, 30);
  *     canvas.strokeRoundRect (50, 50, 100, 100, 30, true);
  */
-CanvasRenderingContext2D.prototype.strokeRoundRect = function (x, y, width, height, radius, direction) {
+CanvasRenderingContext2D.prototype.strokeRoundRect = function(x, y, width, height, radius, direction) {
     this.roundRect(x + 0.5, y + 0.5, width - 1, height - 1, radius, direction);
     this.stroke();
 };
@@ -229,7 +229,7 @@ CanvasRenderingContext2D.prototype.strokeRoundRect = function (x, y, width, heig
  *     canvas.fillRoundRect (0, 0, 200, 200, 30);
  *     canvas.fillRoundRect (50, 50, 100, 100, 30, true);
  */
-CanvasRenderingContext2D.prototype.fillRoundRect = function (x, y, width, height, radius, direction) {
+CanvasRenderingContext2D.prototype.fillRoundRect = function(x, y, width, height, radius, direction) {
     this.roundRect(x, y, width, height, radius, direction);
     this.fill();
 };
@@ -248,12 +248,11 @@ CanvasRenderingContext2D.prototype.fillRoundRect = function (x, y, width, height
  *     draw a heart symbol:
  *     canvas.svgCurve ('M100,30C60,7 0,7 0,76C0,131 100,190 100,190C100,190 200,131 200,76C200,7 140,7 100,30z', 0, 0, 200));
  */
-CanvasRenderingContext2D.prototype.svgCurve = function (x, y, size, svgPath) {
-    let relativeX, relativeY, pathNumber, pathArray, svgPathArray;
-    const ax = function (n) {
-        return (relativeX = x + n * size / 200);
-    }, ay = function (n) {
-        return (relativeY = y + n * size / 200);
+CanvasRenderingContext2D.prototype.svgCurve = function(x, y, size, svgPath) {
+    var relativeX, relativeY, pathNumber, pathArray, svgPathArray, ax = function(n) {
+        return ( relativeX = x + n * size / 200);
+    }, ay = function(n) {
+        return ( relativeY = y + n * size / 200);
     };
     svgPathArray = svgPath.replace(/ *([MZLHVCSQTA]) */gi, '|$1,').replace(/^\||\|[Z],/gi, '').split(/\|/);
 
@@ -293,7 +292,7 @@ CanvasRenderingContext2D.prototype.svgCurve = function (x, y, size, svgPath) {
  * @example
  *     canvas.drawPokerSymbol (0, 0, 200, 'hearts');
  */
-CanvasRenderingContext2D.prototype.drawPokerSymbol = function (x, y, size, symbol) {
+CanvasRenderingContext2D.prototype.drawPokerSymbol = function(x, y, size, symbol) {
     symbol = fixSymbol(symbol);
     if (symbolPath[symbol]) {
         this.svgCurve(x, y, size, symbolPath[symbol]);
@@ -316,7 +315,7 @@ CanvasRenderingContext2D.prototype.drawPokerSymbol = function (x, y, size, symbo
  * @example
  *     canvas.strokePokerSymbol (0, 0, 200, 'hearts');
  */
-CanvasRenderingContext2D.prototype.strokePokerSymbol = function (x, y, size, symbol) {
+CanvasRenderingContext2D.prototype.strokePokerSymbol = function(x, y, size, symbol) {
     this.drawPokerSymbol(x + 0.5, y + 0.5, size - 1, symbol);
     this.stroke();
 };
@@ -337,7 +336,7 @@ CanvasRenderingContext2D.prototype.strokePokerSymbol = function (x, y, size, sym
  * @example
  *     canvas.fillPokerSymbol (0, 0, 200, 'hearts');
  */
-CanvasRenderingContext2D.prototype.fillPokerSymbol = function (x, y, size, symbol) {
+CanvasRenderingContext2D.prototype.fillPokerSymbol = function(x, y, size, symbol) {
     this.drawPokerSymbol(x, y, size, symbol);
     this.fill();
 };
@@ -354,13 +353,12 @@ CanvasRenderingContext2D.prototype.fillPokerSymbol = function (x, y, size, symbo
  * @example
  *     canvas.drawPokerCrown(0, 0, 200);
  */
-CanvasRenderingContext2D.prototype.drawPokerCrown = function (x, y, size, startColor, endColor, fillColor) {
-    let fillLinGrad;
-    const ax = function (n) {
+CanvasRenderingContext2D.prototype.drawPokerCrown = function(x, y, size, startColor, endColor, fillColor) {
+    var fillLinGrad, ax = function(n) {
         return x + n * size / 200;
-    }, ay = function (n) {
+    }, ay = function(n) {
         return y + n * size / 200;
-    }, as = function (n) {
+    }, as = function(n) {
         return n * size / 200;
     };
 
@@ -399,13 +397,12 @@ CanvasRenderingContext2D.prototype.drawPokerCrown = function (x, y, size, startC
  * @example
  *     canvas.drawEmptyCard(0, 0, 200);
  */
-CanvasRenderingContext2D.prototype.drawEmptyCard = function (x, y, size) {
-    let fillLinGrad;
-    const ax = function (n) {
+CanvasRenderingContext2D.prototype.drawEmptyCard = function(x, y, size) {
+    var fillLinGrad, ax = function(n) {
         return x + n * size / 200;
-    }, ay = function (n) {
+    }, ay = function(n) {
         return y + n * size / 200;
-    }, as = function (n) {
+    }, as = function(n) {
         return n * size / 200;
     };
 
@@ -435,8 +432,8 @@ window.Poker = {
      * @example
      *     document.body.appendChild(Poker.getCardImage(100, 'h', 'Q'));
      */
-    getCardImage: function (size, suit, point) {
-        const image = document.createElement('img');
+    getCardImage: function(size, suit, point) {
+        var image = document.createElement('img');
         image.src = this.getCardData(size, suit, point);
         return image;
     },
@@ -456,7 +453,7 @@ window.Poker = {
      * @example
      *     var imgData = Poker.getCardData(100, 'h', 'Q');
      */
-    getCardData: function (size, suit, point) {
+    getCardData: function(size, suit, point) {
         return this.getCardCanvas(size, suit, point).toDataURL();
     },
 
@@ -470,8 +467,8 @@ window.Poker = {
      * @example
      *   document.body.appendChild(Poker.getBackImage(300, '#2E319C', '#7A7BB8'));
      */
-    getBackImage: function (size, foregroundColor, backgroundColor) {
-        const image = document.createElement('img');
+    getBackImage: function(size, foregroundColor, backgroundColor) {
+        var image = document.createElement('img');
         image.src = this.getBackData(size, foregroundColor, backgroundColor);
         return image;
     },
@@ -486,7 +483,7 @@ window.Poker = {
      * @example
      *   var imageData = Poker.getBackCanvas(300, '#2E319C', '#7A7BB8');
      */
-    getBackData: function (size, foregroundColor, backgroundColor) {
+    getBackData: function(size, foregroundColor, backgroundColor) {
         return this.getBackCanvas(size, foregroundColor, backgroundColor).toDataURL();
     }
 };
