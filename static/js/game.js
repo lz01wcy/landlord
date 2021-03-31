@@ -103,10 +103,10 @@ PG.Game.prototype = {
 
                 var hanzi = ['不叫', "一分", "两分", "三分"];
                 this.players[this.whoseTurn].say(hanzi[score]);
-                if (!callend) {
+                // if (!callend) {
                     this.whoseTurn = (this.whoseTurn + 1) % 3;
                     this.startCallScore(score);
-                }
+                // }
                 break;
             case PG.Protocol.RSP_SHOW_POKER:
                 this.whoseTurn = this.uidToSeat(packet[1]);
@@ -149,29 +149,34 @@ PG.Game.prototype = {
                 break;
             case PG.Protocol.RSP_RESTART:
                 this.restart();
+                // 客户端请求发牌
+                // this.send_message([PG.Protocol.REQ_DEAL_POKER]);
             default:
                 console.log("UNKNOWN PACKET:", packet)
 	    }
 	},
-
+    // 清除数据
     cleanWorld: function () {
         for (i =0; i < 3; i ++) {
+            // 清除卡牌图像
             this.players[i].cleanPokers();
             try {
+                // 某个ui组件
                 this.players[i].uiLeftPoker.kill();
             }
             catch (err) {
             }
+            // 更改头像为农民
             this.players[i].uiHead.frameName = 'icon_farmer.png';
         }
-
+        // 清除扑克图像的缓存?
         for (var i = 0; i < this.tablePoker.length; i++) {
                 var p = this.tablePokerPic[this.tablePoker[i]];
                 // p.kill();
                 p.destroy();
             }
     },
-
+    // 重新开始
 	restart: function () {
         this.players = [];
         this.shotLayer = null;
@@ -187,21 +192,22 @@ PG.Game.prototype = {
         this.players.push(PG.createPlay(0, this));
         this.players.push(PG.createPlay(1, this));
         this.players.push(PG.createPlay(2, this));
-        player_id = [1, 11, 12];
-        for (var i = 0; i < 3; i++) {
+        let player_id = [1, 11, 12];
+        for (let i = 0; i < 3; i++) {
             //this.players[i].uiHead.kill();
             this.players[i].updateInfo(player_id[i], ' ');
         }
 
         // this.send_message([PG.Protocol.REQ_DEAL_POKEER, -1]);
+        // this.send_message([PG.Protocol.REQ_DEAL_POKER, -1]);
 //        PG.Socket.send([PG.Protocol.REQ_JOIN_TABLE, this.tableId]);
 	},
 
 	update: function () {
 	},
-
+    // 不能改成===
 	uidToSeat: function (uid) {
-	    for (var i = 0; i < 3; i++) {
+	    for (let i = 0; i < 3; i++) {
 //	        this.debug_log(this.players[i].uid);
 	        if (uid == this.players[i].uid)
 	            return i;
@@ -209,7 +215,8 @@ PG.Game.prototype = {
 	    console.log('ERROR uidToSeat:' + uid);
 	    return -1;
 	},
-    
+
+    // 发牌
     dealPoker: function(pokers) {
 
         for (var i = 0; i < 3; i++) {
@@ -233,7 +240,7 @@ PG.Game.prototype = {
         //    this.send_message([PG.Protocol.REQ_CHEAT, this.players[2].uid]);
         //}, this);
     },
-     
+    // 亮出底牌
     showLastThreePoker: function() {
         for (var i = 0; i < 3; i++) {
             var pokerId = this.tablePoker[i];
@@ -244,7 +251,7 @@ PG.Game.prototype = {
         }
         this.game.time.events.add(1500, this.dealLastThreePoker, this);
     },
-
+    // 地主拿走底牌
     dealLastThreePoker: function() {
 	    var turnPlayer = this.players[this.whoseTurn];
 
@@ -281,7 +288,7 @@ PG.Game.prototype = {
             this.startPlay();
         }
     },
-
+    // 出牌处理
     handleShotPoker: function(packet) {
         this.whoseTurn = this.uidToSeat(packet[1]);
         var turnPlayer = this.players[this.whoseTurn];
@@ -321,14 +328,14 @@ PG.Game.prototype = {
             }
         }
     },
-
+    // 开始叫分
     startCallScore: function(minscore) {
         function btnTouch(btn) {
             this.send_message([PG.Protocol.REQ_CALL_SCORE, btn.score]);
             btn.parent.destroy();
             var audio = this.game.add.audio('f_score_' + btn.score);
             audio.play();
-        };
+        }
 
         if (this.whoseTurn == 0) {
             var step = this.game.world.width/6;
@@ -355,7 +362,7 @@ PG.Game.prototype = {
         }
         
     },
-
+    // 开始出牌
     startPlay: function() {
         if (this.isLastShotPlayer()) {
             this.players[0].playPoker([]);
@@ -363,11 +370,11 @@ PG.Game.prototype = {
             this.players[0].playPoker(this.tablePoker);
         }
     },
-
+    // 结束出牌
     finishPlay: function(pokers) {
         this.send_message([PG.Protocol.REQ_SHOT_POKER, pokers]);
     },
-
+    // 是上一次出牌的玩家
     isLastShotPlayer: function() {
         return this.players[this.whoseTurn] == this.lastShotPlayer;
     },
@@ -402,6 +409,7 @@ PG.Game.prototype = {
         }
     },
 
+    // 退出游戏
     quitGame: function () {
         this.state.start('MainMenu');
     },

@@ -15,8 +15,7 @@ var (
 func initConf() (err error) {
 	environment := os.Getenv("ENV")
 	if environment != "dev" && environment != "testing" && environment != "product" {
-		//environment = "product"
-		environment = "dev"
+		environment = "product"
 	}
 	logs.Info("the running environment is : %s", environment)
 	conf, err := config.NewConfig("ini", "conf/app.conf")

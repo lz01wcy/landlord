@@ -40,7 +40,7 @@ const (
 
 	ReqChat = 43
 	ResChat = 44
-	// 重新开始
+
 	ReqRestart = 45
 	ResRestart = 46
 )

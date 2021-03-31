@@ -1,14 +1,14 @@
 PG.createPlay = function (seat, game) {
-    var player = seat == 0 ? new PG.Player(seat, game) : new PG.NetPlayer(seat, game);
+    var player = seat === 0 ? new PG.Player(seat, game) : new PG.NetPlayer(seat, game);
     var xy = [
         PG.PW / 2, game.world.height - PG.PH - 10,
         game.world.width - PG.PW / 2, 94,
         PG.PW / 2, 94
     ];
     player.initUI(xy[seat * 2], xy[seat * 2 + 1]);
-    if (seat == 0) {
+    if (seat === 0) {
         player.initShotLayer();
-    } else if (seat == 1) {
+    } else if (seat === 1) {
         player.uiHead.scale.set(-1, 1);
     }
     return player;

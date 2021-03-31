@@ -68,7 +68,7 @@ func (table *Table) allCalled() bool {
 	return true
 }
 
-// 一局结束 此时c是赢家
+// 一局结束
 func (table *Table) gameOver(client *Client) {
 	// 先修改状态
 	table.State = GameEnd
@@ -157,7 +157,7 @@ func (table *Table) joinTable(c *Client) {
 	// 字典中加入自己
 	table.TableClients[c.UserInfo.UserId] = c
 	table.syncUser()
-	// 人数=3,进入叫分状态
+	// 人数=3
 	if len(table.TableClients) == 3 {
 		c.Next = table.Creator
 		table.State = GameCallScore
@@ -253,18 +253,13 @@ func (table *Table) reset() {
 		MaxCallScore:     0,
 		MaxCallScoreTurn: nil,
 		LastShotClient:   nil,
-		//Pokers:           table.GameManager.Pokers[:0],
-		//LastShotPoker:    table.GameManager.LastShotPoker[:0],
-		// 之前的重置方法十分诡异 换成这种方法
-		Pokers:        make([]int, 0),
-		LastShotPoker: make([]int, 0),
-		Multiple:      1,
+		Pokers:           table.GameManager.Pokers[:0],
+		LastShotPoker:    table.GameManager.LastShotPoker[:0],
+		Multiple:         1,
 	}
-	// 重设游戏状态
-	table.State = GameCallScore
+
 	// 开房者/房主
 	if table.Creator != nil {
-		// ResRestart是发给房主的
 		table.Creator.sendMsg([]interface{}{common.ResRestart})
 	}
 	// 所有客户端重设
@@ -273,6 +268,8 @@ func (table *Table) reset() {
 	}
 	// 重新发牌 其他东西没问题吗 感觉好多东西都不对啊
 	if len(table.TableClients) == 3 {
+		// 重设游戏状态
+		table.State = GameCallScore
 		table.dealPoker()
 	}
 }
