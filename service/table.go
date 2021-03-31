@@ -51,9 +51,9 @@ type GameManager struct {
 	// 上次出牌的玩家
 	LastShotClient *Client
 	// 牌组
-	Pokers []int
+	Pokers []common.PokerValInt
 	// 上次打出的牌
-	LastShotPoker []int
+	LastShotPoker []common.PokerValInt
 	// 加倍倍数
 	Multiple int //加倍
 }
@@ -85,10 +85,10 @@ func (table *Table) gameOver(client *Client) {
 		// 每个人的手牌
 		for _, cc := range table.TableClients {
 			if cc != c {
-				userPokers := make([]int, 0, len(cc.HandPokers)+1)
-				userPokers = append(userPokers, int(cc.UserInfo.UserId))
+				userPokers := make([]common.PokerValInt, 0, len(cc.HandPokers)+1)
+				userPokers = append(userPokers, common.PokerValInt(cc.UserInfo.UserId))
 				userPokers = append(userPokers, cc.HandPokers...)
-				res = append(res, userPokers)
+				res = append(res, cc.UserInfo.UserId)
 			}
 		}
 		// 向客户端发出消息
@@ -176,7 +176,7 @@ func (table *Table) addRobot(room *Room) {
 		// 生成机器人
 		robot := &Client{
 			Room:       room,
-			HandPokers: make([]int, 0, 21),
+			HandPokers: make([]common.PokerValInt, 0, 21),
 			UserInfo: &UserInfo{
 				UserId:   table.getRobotID(),
 				Username: fmt.Sprintf("ROBOT-%d", len(table.TableClients)),
@@ -210,9 +210,9 @@ func (table *Table) getRobotID() (robot UserId) {
 func (table *Table) dealPoker() {
 	logs.Debug("deal poker")
 	// 生成一副牌
-	table.GameManager.Pokers = make([]int, 0, 54)
+	table.GameManager.Pokers = make([]common.PokerValInt, 0, 54)
 	for i := 0; i < 54; i++ {
-		table.GameManager.Pokers = append(table.GameManager.Pokers, i)
+		table.GameManager.Pokers = append(table.GameManager.Pokers, common.PokerValInt(i))
 	}
 	// 洗牌
 	table.ShufflePokers()
@@ -229,7 +229,15 @@ func (table *Table) dealPoker() {
 	// 每个客户端获得自己的手牌消息
 	for _, client := range table.TableClients {
 		// 排序手牌
-		sort.Ints(client.HandPokers)
+		handInts := make([]int, len(client.HandPokers))
+		for i, poker := range client.HandPokers {
+			handInts[i] = int(poker)
+		}
+		sort.Ints(handInts)
+		for i, hand := range handInts {
+			client.HandPokers[i] = common.PokerValInt(hand)
+		}
+
 		// 将手牌信息加入 发送
 		response[len(response)-1] = client.HandPokers
 		client.sendMsg(response)

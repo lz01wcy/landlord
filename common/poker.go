@@ -14,10 +14,15 @@ var (
 	TypeToPokers = make(map[string][]*Combination, 38)
 )
 
+type PokerValInt int
+
 // 组合
 type Combination struct {
-	Type  string
-	Score int
+	// 类型
+	Type string
+	// 值?核心牌的值吗
+	Score PokerValInt
+	// 字符串形式的牌
 	Poker string
 }
 
@@ -62,7 +67,7 @@ func init() {
 			cards := SortStr(poker)
 			p := &Combination{
 				Type:  pokerType,
-				Score: score,
+				Score: PokerValInt(score),
 				Poker: cards,
 			}
 			Pokers[cards] = p

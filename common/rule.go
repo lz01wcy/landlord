@@ -44,7 +44,7 @@ func IsContains(parent, child string) (result bool) {
 }
 
 //将牌编号转换为扑克牌
-func ToPokers(num []int) string {
+func ToPokers(num []PokerValInt) string {
 	totalCards := "A234567890JQK"
 	res := make([]byte, 0)
 	for _, poker := range num {
@@ -68,25 +68,26 @@ func ToPokers(num []int) string {
 }
 
 //将牌转换为编号
-func ToPoker(card byte) (poker []int) {
+func ToPoker(card byte) (poker []PokerValInt) {
 	if card == 'W' {
-		return []int{52}
+		return []PokerValInt{52}
 	}
 	if card == 'w' {
-		return []int{53}
+		return []PokerValInt{53}
 	}
 	cards := "A234567890JQK"
 	for i, c := range []byte(cards) {
 		if c == card {
-			return []int{i, i + 13, i + 13*2, i + 13*3}
+			pvi := PokerValInt(i)
+			return []PokerValInt{pvi, pvi + 13, pvi + 13*2, pvi + 13*3}
 		}
 	}
-	return []int{54}
+	return []PokerValInt{54}
 }
 
 //将机器人要出的牌转换为编号
-func pokersInHand(num []int, findPokers string) (pokers []int) {
-	var isInResPokers = func(poker int) bool {
+func pokersInHand(num []PokerValInt, findPokers string) (pokers []PokerValInt) {
+	var isInResPokers = func(poker PokerValInt) bool {
 		for _, p := range pokers {
 			if p == poker {
 				return true
@@ -114,13 +115,13 @@ func pokersInHand(num []int, findPokers string) (pokers []int) {
 func pokersValue(pokers string) (cardType string, score int) {
 	if combination, ok := Pokers[SortStr(pokers)]; ok {
 		cardType = combination.Type
-		score = combination.Score
+		score = int(combination.Score)
 	}
 	return
 }
 
 //比较牌大小,并返回是否翻倍
-func ComparePoker(baseNum, comparedNum []int) (int, bool) {
+func ComparePoker(baseNum, comparedNum []PokerValInt) (int, bool) {
 	logs.Debug("comparedNum %v  %v", baseNum, comparedNum)
 	if len(baseNum) == 0 || len(comparedNum) == 0 {
 		if len(baseNum) == 0 && len(comparedNum) == 0 {
@@ -156,7 +157,7 @@ func ComparePoker(baseNum, comparedNum []int) (int, bool) {
 }
 
 //查找手牌中是否有比被比较牌型大的牌
-func CardsAbove(handsNum, lastShotNum []int) (aboveNum []int) {
+func CardsAbove(handsNum, lastShotNum []PokerValInt) (aboveNum []PokerValInt) {
 	handCards := ToPokers(handsNum)
 	turnCards := ToPokers(lastShotNum)
 	cardType, cardScore := pokersValue(turnCards)
@@ -166,7 +167,7 @@ func CardsAbove(handsNum, lastShotNum []int) (aboveNum []int) {
 		return
 	}
 	for _, combination := range TypeToPokers[cardType] {
-		if combination.Score > cardScore && IsContains(handCards, combination.Poker) {
+		if int(combination.Score) > cardScore && IsContains(handCards, combination.Poker) {
 			aboveNum = pokersInHand(handsNum, combination.Poker)
 			return
 		}

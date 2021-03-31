@@ -140,10 +140,10 @@ func (c *Client) wsRequest(data []interface{}) {
 		}
 		if len(data) > 1 {
 			if pokers, ok := data[1].([]interface{}); ok {
-				shotPokers := make([]int, 0, len(pokers))
+				shotPokers := make([]common.PokerValInt, 0, len(pokers))
 				for _, item := range pokers {
 					if i, ok := item.(float64); ok {
-						poker := int(i)
+						poker := common.PokerValInt(i)
 						inHand := false
 						for _, handPoker := range c.HandPokers {
 							if handPoker == poker {

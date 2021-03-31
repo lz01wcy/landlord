@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/astaxie/beego/logs"
+	"landlord/common"
 	"sync"
 )
 
@@ -71,9 +72,9 @@ func (r *Room) newTable(client *Client) (table *Table) {
 			FirstCallScore: client,
 			Multiple:       1,
 			// 初始化上次出过的牌
-			LastShotPoker: make([]int, 0),
+			LastShotPoker: make([]common.PokerValInt, 0),
 			// 初始化牌堆
-			Pokers: make([]int, 0, 54),
+			Pokers: make([]common.PokerValInt, 0, 54),
 		},
 	}
 	// 字典添加table

@@ -88,7 +88,7 @@ func (c *Client) autoShotPoker() {
 		}
 	}()
 	logs.Debug("robot [%v] auto-shot poker", c.UserInfo.Username)
-	shotPokers := make([]int, 0)
+	shotPokers := make([]common.PokerValInt, 0)
 	if len(c.Table.GameManager.LastShotPoker) == 0 || c.Table.GameManager.LastShotClient == c {
 		shotPokers = append(shotPokers, c.HandPokers[0])
 	} else {

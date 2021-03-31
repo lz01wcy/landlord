@@ -53,7 +53,7 @@ type Client struct {
 	// 牌桌
 	Table *Table
 	// 手牌
-	HandPokers []int
+	HandPokers []common.PokerValInt
 	// 已准备
 	Ready    bool
 	IsCalled bool //是否叫完分
@@ -68,7 +68,7 @@ type Client struct {
 //重置状态
 func (c *Client) reset() {
 	c.UserInfo.Role = 1
-	c.HandPokers = make([]int, 0, 21)
+	c.HandPokers = make([]common.PokerValInt, 0, 21)
 	c.Ready = false
 	c.IsCalled = false
 }
@@ -236,7 +236,7 @@ func ServeWs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// 根据conn新建客户端
-	client := &Client{conn: conn, HandPokers: make([]int, 0, 21), UserInfo: &UserInfo{}}
+	client := &Client{conn: conn, HandPokers: make([]common.PokerValInt, 0, 21), UserInfo: &UserInfo{}}
 	// 取得userId和username
 	var userId int
 	var username string
