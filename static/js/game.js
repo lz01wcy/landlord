@@ -1,5 +1,4 @@
-
-PG.Game = function(game) {
+PG.Game = function (game) {
 
     this.roomId = 1;
     this.players = [];
@@ -7,10 +6,10 @@ PG.Game = function(game) {
     this.titleBar = null;
     this.tableId = 0;
     this.shotLayer = null;
-    
+
     this.tablePoker = [];
     this.tablePokerPic = {};
-    
+
     this.lastShotPlayer = null;
 
     this.whoseTurn = 0;
@@ -19,17 +18,17 @@ PG.Game = function(game) {
 
 PG.Game.prototype = {
 
-    init: function(roomId) {
+    init: function (roomId) {
         this.roomId = roomId;
     },
 
     debug_log(obj) {
-    console.log('*******');
-    console.log(obj);
-    console.log('********');
+        console.log('*******');
+        console.log(obj);
+        console.log('********');
     },
 
-	create: function () {
+    create: function () {
         this.stage.backgroundColor = '#182d3b';
 
         this.players.push(PG.createPlay(0, this));
@@ -39,24 +38,24 @@ PG.Game.prototype = {
         PG.Socket.connect(this.onopen.bind(this), this.onmessage.bind(this), this.onerror.bind(this));
 
         this.createTitleBar();
-	},
-	
-	onopen: function() {
-	    console.log('socket onopen');
-        PG.Socket.send([PG.Protocol.REQ_JOIN_ROOM, this.roomId]);
-	},
+    },
 
-    onerror: function() {
+    onopen: function () {
+        console.log('socket onopen');
+        PG.Socket.send([PG.Protocol.REQ_JOIN_ROOM, this.roomId]);
+    },
+
+    onerror: function () {
         console.log('socket connect onerror');
     },
 
-	send_message: function(request) {
+    send_message: function (request) {
         PG.Socket.send(request);
-	},
-	
-	onmessage: function(packet) {
-	    var opcode = packet[0];
-	    switch(opcode) {
+    },
+
+    onmessage: function (packet) {
+        var opcode = packet[0];
+        switch (opcode) {
             case PG.Protocol.RSP_JOIN_ROOM:
                 if (this.roomId == 1) {
                     PG.Socket.send([PG.Protocol.REQ_JOIN_TABLE, -1]);
@@ -71,14 +70,14 @@ PG.Game.prototype = {
                 this.tableId = packet[1];
                 this.titleBar.text = '房间:' + this.tableId;
                 break;
-	        case PG.Protocol.RSP_JOIN_TABLE:
+            case PG.Protocol.RSP_JOIN_TABLE:
                 this.tableId = packet[1];
                 this.titleBar.text = '房间:' + this.tableId;
                 var playerIds = packet[2];
                 for (var i = 0; i < playerIds.length; i++) {
                     if (playerIds[i][0] == this.players[0].uid) {
-                        var info_1 = playerIds[(i+1)%3];
-                        var info_2 = playerIds[(i+2)%3];
+                        var info_1 = playerIds[(i + 1) % 3];
+                        var info_2 = playerIds[(i + 2) % 3];
                         this.players[1].updateInfo(info_1[0], info_1[1]);
                         this.players[2].updateInfo(info_2[0], info_2[1]);
                         break;
@@ -93,6 +92,7 @@ PG.Game.prototype = {
                 this.whoseTurn = this.uidToSeat(playerId);
                 this.startCallScore(0);
                 break;
+            // 叫分
             case PG.Protocol.RSP_CALL_SCORE:
                 var playerId = packet[1];
                 var score = packet[2];
@@ -100,13 +100,20 @@ PG.Game.prototype = {
                 this.debug_log(callend);
                 this.whoseTurn = this.uidToSeat(playerId);
                 //this.debug_log(playerId);
+                // for (var i = 0; i < 3; i++) {
+                //     // this.players[i].pokerInHand.push(54);
+                //     this.players[i].say(this.players[i].uid);
+                //     this.debug_log(this.players[i].uid);
+                // }
+
 
                 var hanzi = ['不叫', "一分", "两分", "三分"];
+                // 次数报错 因为this.whoseTurn=-1
                 this.players[this.whoseTurn].say(hanzi[score]);
-                // if (!callend) {
+                if (!callend) {
                     this.whoseTurn = (this.whoseTurn + 1) % 3;
                     this.startCallScore(score);
-                // }
+                }
                 break;
             case PG.Protocol.RSP_SHOW_POKER:
                 this.whoseTurn = this.uidToSeat(packet[1]);
@@ -119,6 +126,7 @@ PG.Game.prototype = {
             case PG.Protocol.RSP_SHOT_POKER:
                 this.handleShotPoker(packet);
                 break;
+            // 游戏结束
             case PG.Protocol.RSP_GAME_OVER:
                 var winner = packet[1];
                 var coin = packet[2];
@@ -135,11 +143,12 @@ PG.Game.prototype = {
 
                 this.whoseTurn = this.uidToSeat(winner);
 
-                function gameOver() {
-                    alert(this.players[this.whoseTurn].isLandlord ? "地主赢" : "农民赢");
-                    PG.Socket.send([PG.Protocol.REQ_RESTART]);
-                    this.cleanWorld();
-                }
+            function gameOver() {
+                alert(this.players[this.whoseTurn].isLandlord ? "地主赢" : "农民赢");
+                PG.Socket.send([PG.Protocol.REQ_RESTART]);
+                this.cleanWorld();
+            }
+
                 this.game.time.events.add(3000, gameOver, this);
                 break;
             case PG.Protocol.RSP_CHEAT:
@@ -149,36 +158,37 @@ PG.Game.prototype = {
                 break;
             case PG.Protocol.RSP_RESTART:
                 this.restart();
-                // 客户端请求发牌
-                // this.send_message([PG.Protocol.REQ_DEAL_POKER]);
+            // 客户端请求发牌
+            // this.send_message([PG.Protocol.REQ_DEAL_POKER]);
             default:
                 console.log("UNKNOWN PACKET:", packet)
-	    }
-	},
+        }
+    },
     // 清除数据
     cleanWorld: function () {
-        for (i =0; i < 3; i ++) {
+        for (i = 0; i < 3; i++) {
             // 清除卡牌图像
             this.players[i].cleanPokers();
             try {
                 // 某个ui组件
                 this.players[i].uiLeftPoker.kill();
-            }
-            catch (err) {
+            } catch (err) {
             }
             // 更改头像为农民
             this.players[i].uiHead.frameName = 'icon_farmer.png';
         }
         // 清除扑克图像的缓存?
         for (var i = 0; i < this.tablePoker.length; i++) {
-                var p = this.tablePokerPic[this.tablePoker[i]];
-                // p.kill();
-                p.destroy();
-            }
+            var p = this.tablePokerPic[this.tablePoker[i]];
+            // p.kill();
+            p.destroy();
+        }
     },
     // 重新开始
-	restart: function () {
-        this.players = [];
+    restart: function () {
+        // 清空用户添加新用户 导致其和onmessage的参数packet中不一致
+        // 保留用户试试
+        // this.players = [];
         this.shotLayer = null;
 
         this.tablePoker = [];
@@ -189,35 +199,38 @@ PG.Game.prototype = {
         this.whoseTurn = 0;
 
         this.stage.backgroundColor = '#182d3b';
-        this.players.push(PG.createPlay(0, this));
-        this.players.push(PG.createPlay(1, this));
-        this.players.push(PG.createPlay(2, this));
-        let player_id = [1, 11, 12];
-        for (let i = 0; i < 3; i++) {
-            //this.players[i].uiHead.kill();
-            this.players[i].updateInfo(player_id[i], ' ');
-        }
+        // this.players.push(PG.createPlay(0, this));
+        // this.players.push(PG.createPlay(1, this));
+        // this.players.push(PG.createPlay(2, this));
+        // let player_id = [1, 11, 12];
+        // for (let i = 0; i < 3; i++) {
+        //     //this.players[i].uiHead.kill();
+        //     this.players[i].updateInfo(player_id[i], ' ');
+        // }
 
         // this.send_message([PG.Protocol.REQ_DEAL_POKEER, -1]);
         // this.send_message([PG.Protocol.REQ_DEAL_POKER, -1]);
 //        PG.Socket.send([PG.Protocol.REQ_JOIN_TABLE, this.tableId]);
-	},
+    },
 
-	update: function () {
-	},
+    update: function () {
+    },
     // 不能改成===
-	uidToSeat: function (uid) {
-	    for (let i = 0; i < 3; i++) {
+    uidToSeat: function (uid) {
+        let str = ""
+        for (let i = 0; i < 3; i++) {
+            str += i + ":" + this.players[i].uid + "\n"
 //	        this.debug_log(this.players[i].uid);
-	        if (uid == this.players[i].uid)
-	            return i;
-	    }
-	    console.log('ERROR uidToSeat:' + uid);
-	    return -1;
-	},
+            if (uid == this.players[i].uid)
+                return i;
+        }
+        console.log(str);
+        console.log('ERROR uidToSeat:' + uid);
+        return -1;
+    },
 
     // 发牌
-    dealPoker: function(pokers) {
+    dealPoker: function (pokers) {
 
         for (var i = 0; i < 3; i++) {
             var p = new PG.Poker(this, 54, 54);
@@ -241,19 +254,19 @@ PG.Game.prototype = {
         //}, this);
     },
     // 亮出底牌
-    showLastThreePoker: function() {
+    showLastThreePoker: function () {
         for (var i = 0; i < 3; i++) {
             var pokerId = this.tablePoker[i];
             var p = this.tablePoker[i + 3];
             p.id = pokerId;
             p.frame = pokerId;
-            this.game.add.tween(p).to({ x: this.game.world.width/2 + (i - 1) * 60}, 600, Phaser.Easing.Default, true);
+            this.game.add.tween(p).to({x: this.game.world.width / 2 + (i - 1) * 60}, 600, Phaser.Easing.Default, true);
         }
         this.game.time.events.add(1500, this.dealLastThreePoker, this);
     },
     // 地主拿走底牌
-    dealLastThreePoker: function() {
-	    var turnPlayer = this.players[this.whoseTurn];
+    dealLastThreePoker: function () {
+        var turnPlayer = this.players[this.whoseTurn];
 
         for (var i = 0; i < 3; i++) {
             var pid = this.tablePoker[i];
@@ -266,10 +279,12 @@ PG.Game.prototype = {
             turnPlayer.arrangePoker();
             for (var i = 0; i < 3; i++) {
                 var p = this.tablePoker[i + 3];
-                var tween = this.game.add.tween(p).to({y: this.game.world.height - PG.PH * 0.8 }, 400, Phaser.Easing.Default, true);
+                var tween = this.game.add.tween(p).to({y: this.game.world.height - PG.PH * 0.8}, 400, Phaser.Easing.Default, true);
+
                 function adjust(p) {
-                    this.game.add.tween(p).to({y: this.game.world.height - PG.PH /2}, 400, Phaser.Easing.Default, true, 400);
-                };
+                    this.game.add.tween(p).to({y: this.game.world.height - PG.PH / 2}, 400, Phaser.Easing.Default, true, 400);
+                }
+
                 tween.onComplete.add(adjust, this, p);
             }
         } else {
@@ -278,7 +293,7 @@ PG.Game.prototype = {
                 var p = this.tablePoker[i + 3];
                 p.frame = 54;
                 p.frame = 54;
-                this.game.add.tween(p).to({ x: first.x, y: first.y}, 200, Phaser.Easing.Default, true);
+                this.game.add.tween(p).to({x: first.x, y: first.y}, 200, Phaser.Easing.Default, true);
             }
         }
 
@@ -289,7 +304,7 @@ PG.Game.prototype = {
         }
     },
     // 出牌处理
-    handleShotPoker: function(packet) {
+    handleShotPoker: function (packet) {
         this.whoseTurn = this.uidToSeat(packet[1]);
         var turnPlayer = this.players[this.whoseTurn];
         var pokers = packet[2];
@@ -298,19 +313,22 @@ PG.Game.prototype = {
         } else {
             var pokersPic = {};
             pokers.sort(PG.Poker.comparePoker);
-            var count= pokers.length;
+            var count = pokers.length;
             var gap = Math.min((this.game.world.width - PG.PW * 2) / count, PG.PW * 0.36);
             for (var i = 0; i < count; i++) {
                 var p = turnPlayer.findAPoker(pokers[i]);
                 p.id = pokers[i];
                 p.frame = pokers[i];
                 p.bringToTop();
-                this.game.add.tween(p).to({ x: this.game.world.width/2 + (i - count/2) * gap, y: this.game.world.height * 0.4}, 500, Phaser.Easing.Default, true);
+                this.game.add.tween(p).to({
+                    x: this.game.world.width / 2 + (i - count / 2) * gap,
+                    y: this.game.world.height * 0.4
+                }, 500, Phaser.Easing.Default, true);
 
                 turnPlayer.removeAPoker(pokers[i]);
                 pokersPic[p.id] = p;
             }
-        
+
             for (var i = 0; i < this.tablePoker.length; i++) {
                 var p = this.tablePokerPic[this.tablePoker[i]];
                 // p.kill();
@@ -329,7 +347,7 @@ PG.Game.prototype = {
         }
     },
     // 开始叫分
-    startCallScore: function(minscore) {
+    startCallScore: function (minscore) {
         function btnTouch(btn) {
             this.send_message([PG.Protocol.REQ_CALL_SCORE, btn.score]);
             btn.parent.destroy();
@@ -338,9 +356,9 @@ PG.Game.prototype = {
         }
 
         if (this.whoseTurn == 0) {
-            var step = this.game.world.width/6;
+            var step = this.game.world.width / 6;
             var ss = [1.5, 1, 0.5, 0];
-            var sx = this.game.world.width/2 - step * ss[minscore];
+            var sx = this.game.world.width / 2 - step * ss[minscore];
             var sy = this.game.world.height * 0.6;
             var group = this.game.add.group();
             var pass = this.game.make.button(sx, sy, "btn", btnTouch, this, 'score_0.png', 'score_0.png', 'score_0.png');
@@ -360,10 +378,10 @@ PG.Game.prototype = {
         } else {
             // TODO show clock on player
         }
-        
+
     },
     // 开始出牌
-    startPlay: function() {
+    startPlay: function () {
         if (this.isLastShotPlayer()) {
             this.players[0].playPoker([]);
         } else {
@@ -371,11 +389,11 @@ PG.Game.prototype = {
         }
     },
     // 结束出牌
-    finishPlay: function(pokers) {
+    finishPlay: function (pokers) {
         this.send_message([PG.Protocol.REQ_SHOT_POKER, pokers]);
     },
     // 是上一次出牌的玩家
-    isLastShotPlayer: function() {
+    isLastShotPlayer: function () {
         return this.players[this.whoseTurn] == this.lastShotPlayer;
     },
 
@@ -391,8 +409,8 @@ PG.Game.prototype = {
         var style = {font: "22px Arial", fill: "#fff", align: "center"};
 
         for (var i = 0; i < tables.length; i++) {
-            var sx = this.game.world.width * (i%6 + 1)/(6 + 1);
-            var sy = this.game.world.height * (Math.floor(i/6) + 1)/(4 + 1);
+            var sx = this.game.world.width * (i % 6 + 1) / (6 + 1);
+            var sy = this.game.world.height * (Math.floor(i / 6) + 1) / (4 + 1);
 
             var table = this.game.make.button(sx, sy, 'btn', this.onJoin, this, 'table.png', 'table.png', 'table.png');
             table.anchor.set(0.5, 1);
@@ -414,7 +432,7 @@ PG.Game.prototype = {
         this.state.start('MainMenu');
     },
 
-    createTitleBar: function() {
+    createTitleBar: function () {
         var style = {font: "22px Arial", fill: "#fff", align: "center"};
         this.titleBar = this.game.add.text(this.game.world.centerX, 0, '房间:', style);
     },
